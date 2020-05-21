@@ -34,7 +34,7 @@ namespace Nothke.Collections
     public class Pool<T> : ICollection<T>, IEnumerable<T>, ICollection where T : class, IPoolable, new()
     {
         protected T[] array;
-        protected bool[] alive;
+        protected BitArray alive;
         int seek;
         public int capacity { get; private set; }
         int aliveCount;
@@ -52,7 +52,7 @@ namespace Nothke.Collections
         {
             this.capacity = capacity;
             array = new T[capacity];
-            alive = new bool[capacity];
+            alive = new BitArray(capacity);
 
             for (int i = 0; i < capacity; i++)
             {
