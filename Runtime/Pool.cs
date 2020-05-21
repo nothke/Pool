@@ -214,17 +214,10 @@ namespace Nothke.Collections
 
             public bool MoveNext()
             {
-            Next:
+                do { seek++; }
+                while (seek < pool.capacity && !pool.alive[seek]);
 
-                seek++;
-
-                if (seek >= pool.capacity)
-                    return false;
-
-                if (!pool.alive[seek])
-                    goto Next;
-
-                return true;
+                return seek < pool.capacity;
             }
 
             public void Reset()
