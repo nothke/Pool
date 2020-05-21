@@ -28,7 +28,7 @@ public class GameObjectPool : Pool<PoolableGameObject>
                 continue;
 
             alive[i] = false;
-            array[i].Release();
+            array[i].OnRelease();
         }
     }
 }
@@ -42,14 +42,12 @@ public class PoolableGameObject : IPoolable
         gameObject = GameObject.Instantiate(prefab);
     }
 
-    public void Allocate() { }
-
-    public void Obtain()
+    public void OnGet()
     {
         gameObject.SetActive(true);
     }
 
-    public void Release()
+    public void OnRelease()
     {
         gameObject.SetActive(false);
     }

@@ -24,9 +24,8 @@ namespace Nothke.Collections
 {
     public interface IPoolable
     {
-        void Allocate();
-        void Obtain();
-        void Release();
+        void OnGet();
+        void OnRelease();
     }
 
     /// <summary> Fixed size collection whose elements are preallocated.
@@ -105,7 +104,7 @@ namespace Nothke.Collections
         T GetAt(int i)
         {
             alive[i] = true;
-            array[i].Obtain();
+            array[i].OnGet();
             aliveCount++;
             return array[i];
         }
@@ -126,7 +125,7 @@ namespace Nothke.Collections
         void ReleaseAt(int i)
         {
             alive[i] = false;
-            array[i].Release();
+            array[i].OnRelease();
             aliveCount--;
         }
 
