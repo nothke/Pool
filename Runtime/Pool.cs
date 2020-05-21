@@ -38,7 +38,9 @@ namespace Nothke.Collections
         int seek;
         public int capacity { get; private set; }
         int aliveCount;
-        //Dictionary<T, int> hashmap; // TODO
+
+        bool useDict;
+        Dictionary<T, int> hashmap;
 
         public int Count => aliveCount;
         public bool IsReadOnly => false;
@@ -46,18 +48,28 @@ namespace Nothke.Collections
         public bool IsSynchronized => false;
         public object SyncRoot => null;
 
-        /// <summary>Creates the pool with capacity and allocates all elements.
+        /// <summary>
+        /// Creates the pool with capacity and allocates all elements.
+        /// <param name="capacity">The size of the pool.</param>
+        /// <param name="useDictionaryForFastLookup">Uses a dictionary for faster O(1) Release() and Contains(), 
+        /// but increases memory (by ~capacity * 8 bytes). Otherwise lookup is O(n).</param>
         /// </summary>
-        public Pool(int capacity)
+        public Pool(int capacity, bool useDictionaryForFastLookup = true)
         {
             this.capacity = capacity;
             array = new T[capacity];
             alive = new BitArray(capacity);
 
+            useDict = useDictionaryForFastLookup;
+
+            if (useDict)
+                hashmap = new Dictionary<T, int>(capacity);
+
             for (int i = 0; i < capacity; i++)
             {
                 array[i] = new T();
                 alive[i] = false;
+                if (useDict) hashmap.Add(array[i], i);
             }
         }
 
@@ -112,13 +124,21 @@ namespace Nothke.Collections
         // TODO: implement hash?
         public void Release(T item)
         {
-            for (int i = 0; i < capacity; i++)
+            if (useDict)
             {
-                if (array[i] != item)
-                    continue;
-
+                int i = hashmap[item];
                 ReleaseAt(i);
-                return;
+            }
+            else
+            {
+                for (int i = 0; i < capacity; i++)
+                {
+                    if (array[i] != item)
+                        continue;
+
+                    ReleaseAt(i);
+                    return;
+                }
             }
         }
 
@@ -151,6 +171,9 @@ namespace Nothke.Collections
         // TODO: With hash
         public bool Contains(T item)
         {
+            if (useDict)
+                return hashmap.ContainsKey(item);
+
             for (int i = 0; i < capacity; i++)
             {
                 if (!alive[i])
