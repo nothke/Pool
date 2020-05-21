@@ -1,0 +1,12 @@
+{
+  "name": "nothke.pool",
+  "displayName": "Pool",
+  "version": "1.0.0",
+  "unity": "2018.1",
+  "description": "Fixed size collection whose elements are preallocated ",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nothke/Pool"
+  }
+}
